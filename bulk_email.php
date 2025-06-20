@@ -39,7 +39,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $mail->addAddress($email);
                     $mail->isHTML(true);
                     $mail->Subject = $subject;
-                    $mail->Body = nl2br($message);
+                    $mail->Body = $message;
+
 
                     $mail->send();
                     $sent++;
@@ -60,6 +61,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Quill CSS -->
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+
     <style>
     * {
         margin: 0;
@@ -178,6 +182,45 @@ label[for="rowsPerPage"] {
     color: white !important;
 }
 
+/* === Custom Quill Editor Styling to Match Yellow-Themed App === */
+
+.ql-toolbar {
+    background-color: #f1f8e9; /* Soft green tone for toolbar */
+    border: 1px solid #ced4da;
+    border-radius: 0.5rem 0.5rem 0 0;
+    padding: 8px;
+}
+
+.ql-container {
+    background-color: #fff9c4; /* Light yellow background to match app */
+    border: 1px solid #ced4da;
+    border-top: none;
+    border-radius: 0 0 0.5rem 0.5rem;
+}
+
+.ql-editor {
+    background-color: #fff9c4;  /* Match .content background */
+    min-height: 200px;
+    font-size: 1rem;
+    padding: 10px;
+    color: #212529; /* Dark text */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Placeholder text */
+.ql-editor::before {
+    color: #9e9e9e;
+    font-style: italic;
+}
+
+/* Focus style (optional, mimics Bootstrap inputs) */
+.ql-editor:focus,
+#editor:focus-within {
+    outline: 2px solid #80bdff;
+    outline-offset: -2px;
+    background-color: #fffde7;
+}
+
 
 
 </style>
@@ -197,7 +240,10 @@ label[for="rowsPerPage"] {
         </div>
         <div class="mb-3">
             <label class="form-label">Message</label>
-            <textarea name="message" class="form-control" rows="5" required></textarea>
+           <label class="form-label">Message</label>
+<div id="editor" style="height: 200px;"></div>
+<input type="hidden" name="message" id="message">
+
         </div>
         <button type="submit" class="btn btn-primary">Send Bulk Emails</button>
     </form>
@@ -209,6 +255,29 @@ label[for="rowsPerPage"] {
     <?php endif; ?>
     <!-- Bootstrap 5 Bundle with Popper -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Quill JS -->
+<script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+<script>
+  // Initialize Quill editor
+  var quill = new Quill('#editor', {
+    theme: 'snow',
+    placeholder: 'Type your message here...',
+    modules: {
+      toolbar: [
+        [{ header: [1, 2, false] }],
+        ['bold', 'italic', 'underline'],
+        ['link', 'image'],
+        [{ list: 'ordered' }, { list: 'bullet' }],
+        ['clean']
+      ]
+    }
+  });
+
+  // On form submit, set Quill HTML content to hidden input
+  document.querySelector('form').onsubmit = function () {
+    document.querySelector('#message').value = quill.root.innerHTML;
+  };
+</script>
 
 </div>
 </body>
